@@ -17,17 +17,17 @@ class MainWindow extends MainFrame with DocumentSelectedListener{
   var selectedDocument: File=_
 
   val header = new Header(this)
-  contents = new GridPanel(4, 3) {
+  contents = new GridPanel(4, 4) {
     contents += header
     contents += Display
-    contents += new GridPanel(3, 4)
+    contents += new GridPanel(4,4)
     contents += new Button {
       text = "Execute"
       reactions += {
         case ButtonClicked(_) =>
           if (selectedDocument!=null) {
             val result = executor.executeEntropy(selectedDocument)
-            Display.setValues(result._1, result._2)
+            Display.setValues(result._1, result._2, result._3, result._4)
           }
 
       }
@@ -39,19 +39,27 @@ class MainWindow extends MainFrame with DocumentSelectedListener{
   }
 }
 
-object Display extends GridPanel(2, 2) {
+object Display extends GridPanel(4, 4) {
   private var labelEntropy = new Label("0")
   private var labelFullEntropy = new Label("0")
+  private var labelSymbols = new Label("0")
+  private var labelAlphabet = new Label("0")
 
   contents += new Label("Entropy")
   contents += labelEntropy
-  contents += new Label("Full entropy")
+  contents += new Label("Conditional entropy")
   contents += labelFullEntropy
+  contents += new Label("Number of Symbols")
+  contents += labelSymbols
+  contents += new Label("Alphabet")
+  contents += labelAlphabet
 
 
-  def setValues(entropy: Double, fullEntropy: Double): Unit = {
+  def setValues(entropy: Double, fullEntropy: Double, symbols: Int, alphabet: Int): Unit = {
     labelEntropy.text = entropy.toString
     labelFullEntropy.text = fullEntropy.toString
+    labelSymbols.text = symbols.toString
+    labelAlphabet.text = alphabet.toString
   }
 }
 

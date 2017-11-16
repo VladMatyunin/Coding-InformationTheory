@@ -36,7 +36,7 @@ class EntropyExecutor {
           (Math.log((value.toFloat / combinationCount) / (oneCharValue.get.toFloat / charCount))/Math.log(2.toDouble))
       }
     }
-    (entropy(charTable, charCount), conditionalEntropy)
+    (entropy(charTable, charCount), conditionalEntropy, charCount, charTable.size)
   }
   private def entropy(charMap: mutable.HashMap[Char, Int], totalCount:Int ): Double = {
     var entropy = 0d
