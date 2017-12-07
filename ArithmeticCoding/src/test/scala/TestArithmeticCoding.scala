@@ -9,7 +9,7 @@ import vlad.matyunin.ArithmeticCoding
   */
 @RunWith(classOf[JUnitRunner])
 class TestArithmeticCoding extends FunSuite{
-  test("check text data") {
+  /*test("check text data") {
     val coder = new ArithmeticCoding("aab baa")
     assert(coder.textData._2==7)
     assert(coder.textData._1('a')==4)
@@ -25,5 +25,5 @@ class TestArithmeticCoding extends FunSuite{
     val coder = new ArithmeticCoding("aab baa cc")
     val aSegm = coder.getRay((0.0d,4.toDouble/10))('a')
     assert(aSegm._2-aSegm._1-(4*4).toDouble/(10*10)<0.0001)
-  }
+  }*/
 }

@@ -15,46 +15,55 @@ class ArithmeticCoding(text:String) {
     })
     (map.toMap, charNumber, text)
   }
+  class Segment(leftBound:BigValue, rightBound:BigValue) {
 
-  type Segment = (Double, Double)
+    val left: BigValue = {
+      if (leftBound.v.size >= rightBound.v.size) leftBound
+      else leftBound._zeros(rightBound.v.size - leftBound.v.size)
+    }
+    val right: BigValue = {
+      if (rightBound.v.size>leftBound.v.size) rightBound
+      else rightBound._zeros(leftBound.v.size-rightBound.v.size)
+    }
+
+    val delta: BigValue = right - left
+    val minimalMedium: BigValue = {
+      var result = right
+      for (i <- left.v.indices) {
+        if (left.v(i)!=right.v(i)){
+          result = new BigValue(left.v.slice(0,i+1).updated(i,left.v(i)+1))
+        }
+      }
+      result
+    }
+
+    override def toString: String = {
+      left.toString+" -- "+right.toString
+    }
+  }
+
+
+
   type Ray = Map[Char, Segment]
 
-  val initialRay: Ray = getRay((0.0d, 0.999999999999d))
+  val initialRay: Ray = getRay(new Segment(new BigValue(List(0)), new BigValue(List(9,9,9,9,9,9,9,9))))
 
   def getRay(segment: Segment): Ray = {
     val totalCharCount = textData._2
-    val delta = segment._2 - segment._1
-    val charProbability = textData._1.map((obj) => (obj._1, obj._2.toDouble / totalCharCount * delta))
+    val delta = segment.delta
+    val charProbability = textData._1.map((obj) => (obj._1, delta*(obj._2.toDouble /totalCharCount)))
 
-    def iter(start: Double, dict: Map[Char, Double]): Map[Char, Segment] = dict.toList match {
+    def iter(start: BigValue, dict: Map[Char, BigValue]): Map[Char, Segment] = dict.toList match {
       case List() => Map()
-      case a::list => iter(start + dict.head._2, dict.tail) + (dict.head._1 -> (start, start + dict.head._2))
+      case a::list => iter(start + dict.head._2, dict.tail) + (dict.head._1 -> new Segment(start, start + dict.head._2))
     }
 
-    val result = iter(segment._1, charProbability)
-    var formattedRay = Map[Char,Segment]()
-    result.foreach((obj)=>{
-      val left = obj._2._1.toString.substring(2)
-      val right = obj._2._2.toString.substring(2)
-      val (text1, text2) = ArithmeticHelper.formatSegment(left, right)
-      var iter = true
-      if(text1.length>5)
-      for {i <- 0 until text1.length if iter} {
-        if (text1(i) != text2(i)) {
-          val newLeft = ("0."+text1).toDouble
-          val newRight = ("0."+text2).toDouble
-          formattedRay= formattedRay+(obj._1->ArithmeticHelper.roundSegmValues(newLeft,newRight,i))
-          iter = false
-        }
-      }
-      if (!formattedRay.contains(obj._1)) formattedRay+=obj
-    })
-    formattedRay
+    iter(segment.left, charProbability)
   }
 
-  def execute():List[(Char,String)] = {
+  def execute():List[(Char,BigValue)] = {
     var currentRay = initialRay
-    var dict = List[(Char, String)]()
+    var dict = List[(Char, BigValue)]()
     for (char <- text.toCharArray) {
       dict = (char, encode(currentRay, char))::dict
       currentRay = getRay(currentRay(char))
@@ -62,23 +71,18 @@ class ArithmeticCoding(text:String) {
     dict
   }
 
-  def getMinValue(segment: Segment): Int = {
-    val left = segment._1.toString.substring(2)
-    val right = segment._2.toString.substring(2)
-    val (text1, text2) = ArithmeticHelper.formatSegment(left, right)
-    for (i <- 0 until text1.length) {
-      if (text1(i) != text2(i)) {
-        return ArithmeticHelper.getMinString(text1, text2, i).toInt
-      }
-    }
-    segment._1.toInt
-  }
+  def getMinValue(segment: Segment): BigValue =
+    segment.minimalMedium
 
-  def encode(currentRay: Ray, char: Char): String = {
-    val doubleValue = getMinValue(currentRay(char))
-    doubleToBytes(doubleValue)
+
+  def encode(currentRay: Ray, char: Char): BigValue = {
+    getMinValue(currentRay(char))
   }
 
 
-  def doubleToBytes(value: Double): String = value.toInt.toBinaryString
+  def doubleToBytes(value: BigValue): String = {
+    var result = ""
+    value.v.foreach((v)=>result+=v.toBinaryString)
+    result
+  }
 }
