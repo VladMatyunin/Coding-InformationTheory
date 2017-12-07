@@ -18,12 +18,75 @@ class ArithmeticCoding(text:String) {
   class Segment(leftBound:BigValue, rightBound:BigValue) {
 
     val left: BigValue = {
-      if (leftBound.v.size >= rightBound.v.size) leftBound
-      else leftBound._zeros(rightBound.v.size - leftBound.v.size)
+      var result = new BigValue(List())
+
+      if (leftBound.v.size >= rightBound.v.size){
+        var newLeftBound = new BigValue(leftBound.v)
+        var newRightBound = new BigValue(rightBound.v)
+        var i = 0
+        newRightBound  = newRightBound._zeros(leftBound.v.size-rightBound.v.size)
+        while (i>=0 && i < newRightBound.v.size) {
+          if (newLeftBound.v(i)!=newRightBound.v(i)){
+            result = new BigValue(newLeftBound.v.slice(0,i+1))
+            i = -1
+          }else {
+            result = new BigValue(newLeftBound.v.slice(0,i+1))
+            i += 1
+          }
+        }
+      }
+      else {
+        var i = 0
+        var newLeftBound = new BigValue(leftBound.v)
+        var newRightBound = new BigValue(rightBound.v)
+        newLeftBound  = newLeftBound._zeros(rightBound.v.size-leftBound.v.size)
+        while (i>=0 && i < newLeftBound.v.size) {
+          if (newLeftBound.v(i)!=rightBound.v(i)){
+            result = new BigValue(newLeftBound.v.slice(0,i+1))
+            i = -1
+          }else {
+            result = new BigValue(newLeftBound.v.slice(0,i+1))
+            i += 1
+          }
+        }
+
+      }
+      result
     }
     val right: BigValue = {
-      if (rightBound.v.size>leftBound.v.size) rightBound
-      else rightBound._zeros(leftBound.v.size-rightBound.v.size)
+      var result = new BigValue(List())
+      if (rightBound.v.size >= leftBound.v.size){
+        var i = 0
+        var newLeftBound = new BigValue(leftBound.v)
+        var newRightBound = new BigValue(rightBound.v)
+        newLeftBound  = newLeftBound._zeros(rightBound.v.size-leftBound.v.size)
+        while (i>=0 && i<newLeftBound.v.size) {
+          if (newLeftBound.v(i)!=rightBound.v(i)){
+            result = new BigValue(rightBound.v.slice(0,i+1))
+            i = -1
+          }else {
+            result = new BigValue(rightBound.v.slice(0,i+1))
+            i += 1
+          }
+        }
+      }
+      else {
+        var i = 0
+        var newLeftBound = new BigValue(leftBound.v)
+        var newRightBound = new BigValue(rightBound.v)
+        newRightBound  = newLeftBound._zeros(rightBound.v.size-leftBound.v.size)
+        while (i>=0 && i<newRightBound.v.size) {
+          if (leftBound.v(i)!=newRightBound.v(i)){
+            result = new BigValue(newRightBound.v.slice(0,i+1))
+            i= -1
+          }else {
+            result = new BigValue(newRightBound.v.slice(0,i+1))
+            i += 1
+          }
+        }
+
+      }
+      result
     }
 
     val delta: BigValue = right - left
